@@ -55,6 +55,19 @@ Open **`index.html`** by double-clicking it, or drag it into any modern browser.
 - No testimonials or case results are shown, since none are independently verifiable and fabricating them
   would be misleading for a law firm.
 
+## SEO
+
+On-page SEO is built in: a unique `<title>` + meta description, an `Attorney` (LegalService) **JSON-LD**
+block with the firm's real name, phone, address, hours, service areas, and practice areas, complete
+**Open Graph + Twitter Card** tags, a `<link rel="canonical">`, plus `robots.txt` and `sitemap.xml` at the
+repo root.
+
+**Base-URL placeholder:** the canonical link, `og:url`, `twitter`/`og` image, JSON-LD `url`/`image`,
+`robots.txt`, and `sitemap.xml` all use the literal placeholder **`https://REPLACE-WITH-DOMAIN.com/`**.
+Before deploying, do a single find-and-replace of `https://REPLACE-WITH-DOMAIN.com/` with the real domain
+across `index.html`, `robots.txt`, and `sitemap.xml`. (An `assets/og-image.jpg` social-share image should
+also be added at deploy — the tags reference it.)
+
 ---
 
 Redesign concept prepared as an unsolicited pitch. Not affiliated with or endorsed by the firm.
