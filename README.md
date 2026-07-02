@@ -63,8 +63,8 @@ block with the firm's real name, phone, address, hours, service areas, and pract
 repo root.
 
 **Base-URL placeholder:** the canonical link, `og:url`, `twitter`/`og` image, JSON-LD `url`/`image`,
-`robots.txt`, and `sitemap.xml` all use the literal placeholder **`https://REPLACE-WITH-DOMAIN.com/`**.
-Before deploying, do a single find-and-replace of `https://REPLACE-WITH-DOMAIN.com/` with the real domain
+`robots.txt`, and `sitemap.xml` all use the literal placeholder **`https://andinglawfirm.com/`**.
+Before deploying, do a single find-and-replace of `https://andinglawfirm.com/` with the real domain
 across `index.html`, `robots.txt`, and `sitemap.xml`. (An `assets/og-image.jpg` social-share image should
 also be added at deploy — the tags reference it.)
 
