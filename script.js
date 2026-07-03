@@ -12,38 +12,69 @@
   var heroReveals = document.querySelectorAll(".hero .reveal");
   heroReveals.forEach(function (el, i) { el.style.setProperty("--i", String(i)); });
 
-  /* Sticky header shrink on scroll */
-  var header = document.getElementById("siteHeader");
-  var onScroll = function () {
-    if (!header) return;
-    if (window.scrollY > 20) header.classList.add("shrink");
-    else header.classList.remove("shrink");
-  };
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
-
   /* Mobile nav toggle */
+  var header = document.getElementById("siteHeader");
   var toggle = document.getElementById("navToggle");
   var menu = document.getElementById("navMenu");
+  var drawer = document.getElementById("navDrawer");
+  var scrim = document.getElementById("navScrim");
+
+  var openMenu = function () {
+    if (!drawer || !toggle) return;
+    drawer.classList.add("open");
+    if (menu) menu.classList.add("is-open");
+    if (scrim) scrim.classList.add("is-open");
+    toggle.classList.add("is-open");
+    toggle.setAttribute("aria-expanded", "true");
+    toggle.setAttribute("aria-label", "Close menu");
+    if (header) header.classList.add("nav-open");
+  };
   var closeMenu = function () {
-    if (!menu || !toggle) return;
-    menu.classList.remove("open");
+    if (!drawer || !toggle) return;
+    drawer.classList.remove("open");
+    if (menu) menu.classList.remove("is-open");
+    if (scrim) scrim.classList.remove("is-open");
+    toggle.classList.remove("is-open");
     toggle.setAttribute("aria-expanded", "false");
     toggle.setAttribute("aria-label", "Open menu");
+    if (header) header.classList.remove("nav-open");
   };
-  if (toggle && menu) {
+  if (toggle && drawer) {
     toggle.addEventListener("click", function () {
-      var open = menu.classList.toggle("open");
-      toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      if (drawer.classList.contains("open")) closeMenu();
+      else openMenu();
     });
-    menu.addEventListener("click", function (e) {
-      if (e.target.closest("a")) closeMenu();
-    });
+    if (menu) {
+      menu.addEventListener("click", function (e) {
+        if (e.target.closest("a")) closeMenu();
+      });
+    }
+    if (scrim) scrim.addEventListener("click", closeMenu);
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") closeMenu();
     });
   }
+
+  /* Sticky header: shrink after a little scroll; hide on scroll-down,
+     reveal on ANY upward scroll (even a few px). */
+  var lastY = window.scrollY || window.pageYOffset || 0;
+  var onScroll = function () {
+    if (!header) return;
+    var y = window.scrollY || window.pageYOffset || 0;
+    if (y > 20) header.classList.add("shrink");
+    else header.classList.remove("shrink");
+
+    if (!drawer || !drawer.classList.contains("open")) {
+      if (y > lastY && y > 120) {
+        header.classList.add("hide");     // scrolling down, past the header
+      } else if (y < lastY) {
+        header.classList.remove("hide");  // any upward scroll reveals it
+      }
+    }
+    lastY = y;
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
 
   /* Scroll-reveal via IntersectionObserver */
   var reveals = document.querySelectorAll(".reveal");
