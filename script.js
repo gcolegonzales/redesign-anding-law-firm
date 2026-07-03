@@ -19,6 +19,40 @@
   var drawer = document.getElementById("navDrawer");
   var scrim = document.getElementById("navScrim");
 
+  var main = document.getElementById("main");
+  var footer = document.querySelector("footer");
+
+  var getFocusable = function () {
+    if (!menu) return [];
+    return Array.prototype.slice.call(
+      menu.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+    ).filter(function (el) { return el.offsetParent !== null || el.getClientRects().length; });
+  };
+
+  var setBackgroundInert = function (on) {
+    [main, footer].forEach(function (el) {
+      if (!el) return;
+      if (on) { el.setAttribute("inert", ""); el.setAttribute("aria-hidden", "true"); }
+      else { el.removeAttribute("inert"); el.removeAttribute("aria-hidden"); }
+    });
+  };
+
+  var onKeydown = function (e) {
+    if (!drawer || !drawer.classList.contains("open")) return;
+    if (e.key === "Escape") { closeMenu(); return; }
+    if (e.key === "Tab") {
+      var f = getFocusable();
+      if (!f.length) { e.preventDefault(); return; }
+      var first = f[0], last = f[f.length - 1];
+      var active = document.activeElement;
+      if (e.shiftKey) {
+        if (active === first || !menu.contains(active)) { e.preventDefault(); last.focus(); }
+      } else {
+        if (active === last || !menu.contains(active)) { e.preventDefault(); first.focus(); }
+      }
+    }
+  };
+
   var openMenu = function () {
     if (!drawer || !toggle) return;
     drawer.classList.add("open");
@@ -28,9 +62,15 @@
     toggle.setAttribute("aria-expanded", "true");
     toggle.setAttribute("aria-label", "Close menu");
     if (header) header.classList.add("nav-open");
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    setBackgroundInert(true);
+    var f = getFocusable();
+    if (f.length) f[0].focus();
   };
   var closeMenu = function () {
     if (!drawer || !toggle) return;
+    var wasOpen = drawer.classList.contains("open");
     drawer.classList.remove("open");
     if (menu) menu.classList.remove("is-open");
     if (scrim) scrim.classList.remove("is-open");
@@ -38,6 +78,10 @@
     toggle.setAttribute("aria-expanded", "false");
     toggle.setAttribute("aria-label", "Open menu");
     if (header) header.classList.remove("nav-open");
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+    setBackgroundInert(false);
+    if (wasOpen) toggle.focus();
   };
   if (toggle && drawer) {
     toggle.addEventListener("click", function () {
@@ -50,8 +94,10 @@
       });
     }
     if (scrim) scrim.addEventListener("click", closeMenu);
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") closeMenu();
+    document.addEventListener("keydown", onKeydown);
+    /* Reset drawer + toggle state when resizing across the desktop breakpoint */
+    window.addEventListener("resize", function () {
+      if (window.innerWidth > 760 && drawer.classList.contains("open")) closeMenu();
     });
   }
 
