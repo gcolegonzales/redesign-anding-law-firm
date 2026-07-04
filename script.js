@@ -18,6 +18,7 @@
   var menu = document.getElementById("navMenu");
   var drawer = document.getElementById("navDrawer");
   var scrim = document.getElementById("navScrim");
+  var closeBtn = document.getElementById("navClose");
 
   var main = document.getElementById("main");
   var footer = document.querySelector("footer");
@@ -66,7 +67,8 @@
     document.body.style.overflow = "hidden";
     setBackgroundInert(true);
     var f = getFocusable();
-    if (f.length) f[0].focus();
+    /* preventScroll: focusing the first item must not scroll the page to top (G3) */
+    if (f.length) f[0].focus({ preventScroll: true });
   };
   var closeMenu = function () {
     if (!drawer || !toggle) return;
@@ -94,6 +96,7 @@
       });
     }
     if (scrim) scrim.addEventListener("click", closeMenu);
+    if (closeBtn) closeBtn.addEventListener("click", closeMenu);
     document.addEventListener("keydown", onKeydown);
     /* Reset drawer + toggle state when resizing across the desktop breakpoint */
     window.addEventListener("resize", function () {
